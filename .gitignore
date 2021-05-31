@@ -132,6 +132,6 @@ dmypy.json
 .Rhistory
 
 ### Latex things
-/report/
-!*.tex
-!/report/img/
+report/*
+!report/*.tex
+!report/img/
