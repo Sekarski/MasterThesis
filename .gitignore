@@ -127,3 +127,11 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+### R things
+.Rhistory
+
+### Latex things
+/report
+!*.tex
+!/report/img
