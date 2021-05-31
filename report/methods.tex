@@ -1,0 +1,47 @@
+\chapter{Methods}
+%LM,KNN,Tree,ANN,Garch - qu'est-ce que c'est et comment ça marche
+
+\section{Time Series Methods}
+\subsection{ARIMA}
+\subsection{GARCH}
+
+$$
+Y_t = \sigma_t \epsilon_t
+$$
+$$
+\sigma_t^2 = \alpha_0 + \sum_{j=1}^m \alpha_j Y_{t-j}^2 + \sum_{j=1}^r \beta_j \sigma_{t-j}^2
+\quad, \epsilon_t \stackrel{iid}{\sim} \mathcal{N}(0,1)
+$$
+
+\acrshort{garch} models are generally the \acrlong{ts} models used for financial data
+
+\section{Machine Learning Methods}
+We'll go over the various methods we will be using, giving a brief description and overview of the pros and cons of each and when it is appropriate to use them.
+We will suppose that there are $n$ observations and $m$ features.
+
+
+\subsection{Linear Models}
+The idea is to use a linear combination of features to determine the response. The linear constants are the parameters that need to be chosen to give the best approximation of the response space using the feature space. Geometrically this means fitting a hyperplane to the training set, by minimizing some function (loss function).
+Formally:
+$$
+Y_j = \sum_{i=1}^m \beta_{i} X_{ji} \quad, j=1,\dots,n
+$$
+
+\subsubsection{Advantages}
+\acrlong{lm} are some of the most common and simple models out there, but they have proven to be reliable and can be made quite complex with feature engineering. There plenty of theory and proofs about these methods. This all makes these methods and obvious first choice of methods to consider.
+%insert "toute est linéaire" quote
+\subsubsection{Problems}
+
+
+\subsection{K Nearest Neighbours}
+The intuition behind \acrshort{knn} methods is simple. The idea is that observations (points in the feature space) which are "close" will have responses that are also "close". Then a good approximation would be given by averaging the responses of the K observations "closest" to the new observation.
+In this model, we need to chose the definition of "close" as well as chose the value of K.
+Usually, the distance used to define close, is the euclidean distance and that is the one we used. As for K this parameter needs to be tuned. The larger it is the smoother the result is and the lower the more jagged it is. For optimal tuning the parameter should be as small as possible, without over-fitting.
+\subsubsection{Advantages}
+It's very intuitive and very simple to implement. 
+It's non parametric ? <- no prior knowledge or guess about the prior distribution
+\subsubsection{Problems}
+It suffers from curse of dimensionality. When the dimension of the feature space gets large, the space becomes sparsely populated, and the K closest observations, might actually be very far from each other, and thus not reflect well the new observation.
+As a workaround for this problem, there is a variant of \acrshort{knn} which instead of using the K closest observations, uses all the observations which fall in a certain radius of the new observation point. Thus the K parameter becomes R, the radius of the hyperball.
+\subsection{Trees}
+\subsection{Artificial Neural Networks}

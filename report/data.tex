@@ -1,0 +1,36 @@
+\chapter{Data}
+%présentation des datas, à quoi ça ressemble, preprocessing, data auxiliaire
+Realizing that we need to be careful with time zones, as for example, TSLA is traded on the NASDAQ stock exchange, which is in New York, whereas Elon Musk tweets from California and I am in Switzerland while analysing the data and the reader might be anywhere in the world, we shall convert all times to UTC.
+\section{Main data: Tesla Stock Price}
+The \acrshort{tsla} price data was retrieved using the python package "yfiance" which makes calls to the Yahoo Finance \Gls{API}. We were able to download 730 days worth of hourly data, spanning the last 730 days from download date. The Yahoo Finance \Gls{API} is not being maintained, so this may not be possible in the future. The data was retrieved on February 10th 2021 and spanned from February 11th 2019 at 00:00 till February 10th 2021 at 00:00.
+The raw data contained the following variables: "Open", "High", "Low", "Close", "Volume", "Dividends" and "Stock Splits".
+For the purposes of this thesis, we only kept "Open" although for a really thorough analysis, the other should be kept.
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=\textwidth]{img/img_tsla.pdf}
+	\caption{TSLA hourly opening stock price}
+	\label{fig:tsla_open}
+\end{figure}
+
+
+
+\section{Auxiliary data}
+\subsection{Google Trends}
+\acrfull{gt} is a tool that lets one explore how the Google search engine as been used.
+
+The \acrlong{gt} data was retrieved using the python package "pytrends" which makes calls to the \acrlong{gt} \Gls{API}. Each \Gls{API} call will return the percentage of the number of searches per time unit in an interval, relative to the peak searches of the interval. That is to say that at the time step where there were the most searches, the returned value will be 100, and for all other time steps, the return value will range from 0 to 100, rounded to the nearest digit.
+We are interested in hourly data, but for hourly granularity, we can only retrieve one week at a time. Retrieving a longer interval results in a higher granularity. The solution we used was to do multiple calls to the \Gls{API} to get the hourly data relative to each week, and then also retrieve the weekly-granular data for the entire timeframe, and compose the hourly with the weekly, to get hourly percentage relative to the whole time interval.
+
+The data was retrieved on March 17th 2021 and spanned from December 31st 2018 at 06:00 to March 17th 2021 at 15:00.
+After visual and numerical inspection of the data, it appeared that there was a gap in the data between February 24th 2020 12:00 and March 17th 2020 15:00. I can only hypothesis that there was some Covid-19 induced problem at Google that is responsible for this, as that's the time frame where the Pandemic started to really pick up globally, as the same gap is present in all searches that I looked up with their \Gls{API}. 
+We truncated this missing data, with the daily \acrshort{gt} value, which were available. We did a simple step truncation, before composing the hourly-weekly data with the weekly-interval data. As shown in Fig ...
+
+As the trading data is only between 10am and 5pm EST, we simply dropped data outside of that fork. This was a subjective choice, and it can be discussed whether it would not have been better to aggregate the dropped time and incorporate them in the observations somehow. Our reasoning was that if people searched for the terms before the market opening (say at 11pm the previous day), because they were interested in buying, they were likely to search for the term again right before the market opens, in order to make sure no new information came to light in the mean time to change their mind, and thus their interest would still be captured in the used data. Likewise, if someone was searching with the intent on selling, they too would search again prior to making the transaction, in order to double check.
+
+\subsection{Twitter data}
+The popular social media platform Twitter has an \Gls{API} that lets people interact with and explore the Twitter Database. There are several tiers available that give different degrees of access to the database. The free tier did not give significant access to the tweet history, and as such we had to apply for an academic tier.
+
+The API gives access to an impressive amount of data. We will be focusing on tweets by Elon Musk, and twitter metrics of "like count" and "retweet count", though others are available as well.
+
+Tweets have a precise timestamp and thus we have aggregated them to that for every hour H, the corresponding value is that of the sum of all tweets in the range ]H-1,H]. We then added the out of trading hours values to the first trading hour of each day. Again, it can be discussed whether it would have been better to aggregate this data differently, or drop it all together, like for the \acrlong{gt} data. Our reasoning is that if Elon Musk tweets something out of hours, that gets people in a good or bad frenzy about \acrshort{tsla}, then that frenzy would not die down before the market opened.

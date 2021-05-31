@@ -1,0 +1,93 @@
+\documentclass[10pt]{report}
+
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage[acronym,toc]{glossaries}
+\usepackage{graphicx}
+\usepackage{hyperref}
+
+\title{Predictive Models on Tesla Stock}
+\author{Samuel Sekarski \\ Supervisor: Dr. Gholam}
+\date{June 2021}
+
+\makeglossaries
+\newacronym{ts}{TS}{Time Series}
+\newacronym{ml}{ML}{Machine Learning}
+\newacronym{tsla}{TSLA}{Tesla Stock}
+\newacronym{gt}{GT}{Google Trends}
+\newacronym{knn}{KNN}{k-nearest neighbors}
+\newacronym{ann}{ANN}{Artificial Neural Network}
+\newacronym{lm}{LM}{Linear Model}
+\newacronym{mse}{MSE}{Mean Square Error}
+\newacronym{arima}{ARIMA}{Autoregressive Integrated Moving Average}
+\newacronym{arch}{ARCH}{Autoregressive Conditional Heteroskedasticity}
+\newacronym{garch}{GARCH}{Generalized Autoregressive Conditional Heteroskedasticity}
+\newacronym{acf}{ACF}{Auto-correlation function}
+\newacronym{pacf}{PACF}{Partial auto-correlation function}
+
+
+\newglossaryentry{API}
+{
+	name=API,
+	description={tools available for interfacing with a library}
+}
+\newglossaryentry{R2}
+{
+	name=$R^2$,
+	description={Coefficient of determination}
+}
+\newglossaryentry{snp}
+{
+	name=S\&P500,
+	description={S\&P500 index, composed of 500 important US stocks}
+}
+
+\begin{document}
+\maketitle
+
+\tableofcontents
+\listoffigures
+
+\chapter{Introduction}
+%Questions:
+%ML vs TS ?
+%What support data could improve accuracy ?
+%In summary on ISA i wrote "how did covid impact stock price", buuuut didn't really look at that (yet ?)
+In 2020, despite the global pandemic, the electric vehicle maker Tesla saw it's stock price go up 700$\%$, which is more than Amazon's or Netflix's went up, both of whom profited during the pandemic. Tesla was also added to the S$\&$P500 index in November and underwent a stock split shortly before that, because of increased demands. In fact for years, Tesla stock has been on the minds of more and more potential investors, wondering if they should buy-in or not.
+
+In this thesis, we will look to try to find models that could accurately fit Tesla's stock price evolution, which people could use to help make decisions. We will not, however, develop any kind of trading strategy, nor suggest to the reader any financial actions.
+
+To frame our research our main question will be: How well can our models fit Tesla stock price ?
+We shall use data spanning 2019 and 2020.
+
+The classical approach to financial data is through \acrfull{ts} analysis, and as such we shall consider various models developed for time series. The more novel approach is to use \acrfull{ml} algorithms to attempt to train a model to fit the financial data. We shall explore some of these methods as well, and then compare both the Machine Learning and Time Series approaches, and see which yields the better fits. This shall be our second area of focus.
+
+In continuation of the first question, we shall ask ourselves how public sentiment about Tesla affects it's stock. In the past, investing was reserved only to big institutions and select individuals, but with the rise of internet, this practice has been expanded and now anyone (so called "retail investors") can invest. And as seen in the Gamestop short squeeze of January 2021, when a bunch of individuals have a similar sentiment, they can influence the markets immensely. We shall use the Google Trends API to see if adding a public sentiment factor into account benefits the modelling.
+
+Another subquestion we shall consider, is whether posts on social media can influence a stock.
+Tesla CEO Elon Musk is known for his tweeting habits that can shake markets, as for example with his tweets about cryptocurrency in early 2021. Another example, closer to the subject, is when Musk tweeted in May 2020 that the stock price was "too high" and the stock then fell 10$\%$. The US Securities and Exchange Commission (SEC) definitely thinks Musk's tweet have influence, as the SEC filed a lawsuit against the billionaire in September 2018 regarding one of his tweets. We shall use data collected from Twitters API to see if his tweets truly have an influence and if using this data we can improve upon our models.
+
+
+We shall also, in a lesser measure, compare how implementations of these methods in the two main programming languages for data analysis, that is Python and R, compare to each other. Are there significant outcome differences using one or the other ? What kind of support (frameworks, libraries, packages, etc.) exist for this kind of modelling in each ?
+
+And finally, since the begging of 2021, the stock price has tapered off, and fallen. We shall lastly ask ourselves if our best models developed on the 2019 and 2020 time frame will predict this.
+
+\include{tools}
+
+\include{data}
+
+\include{methods}
+
+\include{experiment_design}
+
+\include{results}
+
+\chapter{Conclusion}
+
+\chapter{Future Works}
+
+
+\printglossary[type=\acronymtype]
+\printglossary
+
+\end{document}

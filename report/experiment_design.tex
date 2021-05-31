@@ -1,0 +1,42 @@
+\chapter{Experiment Design}
+%need better name for this chapter. Can't remember what this is called when we're not actually doing experiments.
+We shall separate all our data into 2 sets: the training set $(\mathcal{X}_{train},\mathcal{Y}_{train})$ and the test set $(\mathcal{X}_{test},\mathcal{Y}_{test})$
+The split date was chosen to be January 4th 2021 at 10:00.
+We will train our models on the training set, and then predict responses for observations in the test set. That is we will predict a set $\mathcal{Y}_{predict} = F(\mathcal{X}_{test})$ where $F()$ is the model's prediction function.
+
+\section{Metrics}
+%R^2
+%MSE
+%others ???
+
+To compare the results and rank them, we shall use several metrics to asses goodness of fit and predictive power. The main two we shall consider are \acrfull{mse} and $R^2$.
+\subsection{$MSE$}
+Let $m$ be the size of the test set and let $\hat{Y}_i$ be the predicted value for the $i$-th observation in the test set.
+The \acrlong{mse} is defined as $MSE(\mathcal{Y}_{predict}) = \frac{1}{m}\sum_{i=1}^m (Y_i - \hat{Y}_i)^2$
+\subsection{$R^2$}
+$R^2$ denotes the coefficient of determination.
+
+The one used by our Python package, is defined as:
+
+$R^2(\mathcal{Y}_{test},\mathcal{Y}_{predict}) = 1 - \frac{\sum_{i=1}^m(y_i - \hat{y}_i)^2}{\sum_{i=1}^m(y_i - \bar{y}_i)^2}$
+
+Where $\bar{y} = \frac{1}{m} \sum_{i=1}^m y_i$. %(source (25.05.2021): https://scikit-learn.org/stable/modules/model_evaluation.html#r2-score)
+
+The best score is 1.0, a constant model that always predicts the expected value of $y$ without taking into account the input, would be 0.0 and the score can be arbitrarily negative, as the top term can be arbitrarily large (i.e. our predictions can be arbitrarily bad. So for our methods to be better than just using the mean of the observations, we would like them to be larger than zero.
+
+\section{set-up}
+%ML univariate response: using one value of each feature for predict one value of response
+%ML multivariate resposne: using one month of features are one point in the feature hyperplane to predict one week of responses as one point in the response hyperplane
+
+\subsection{Univariate response}
+In this set-up we consider the response variable to be univariate $Y=Y_t$.
+
+We shall then train the models on the training set, and then predict one week ahead, and compare with the values of the test set.
+
+\subsection{Multivariate response}
+In this set-up we consider the response variable to be multivariate $Y=(Y_t, Y_{t+1}, ..., Y_{t+r})$
+We shall consider the response to be one week ahead worth of data, or 35 steps. To predict this multivariate response, we shall augment the feature space dimensions, by not only considering $X_{j_t}$'s as predictors, but also $X_{j_{t-1}},X_{j_{t-2}},...,X_{j_{t-p}}$ as predictors. We shall consider one month of past data (or 140 time steps) as part of one observation.
+
+In the first set-up, the forecast of observation $Y_{t+1}$ is generally good but the forecast of each observation after that gets more and more vague, faster and faster. To the point where after a number of time steps, the forecasts hold no more value and become effectively useless. The idea in the second setup, is to put a certain number of future observations into the response variable, so that when forecasting, the "first observation" that is forecast (so the one that is usually the best) now contains contains multiple steps ahead. Of course this comes at a price; using the same feature space, but with more response variables, will cause the fit and predictions to be worse. So we need to augment the feature space as well, by considering multiple steps behind as part of one observation point. This is actually what the Time Series methods actually already do. They use a combination of previous values to predict the next values.
+
+We shall then train this on the training set, and predict one step ahead (which effectively will be one week ahead) and compare the values with those of the test set.
