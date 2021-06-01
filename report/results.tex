@@ -20,7 +20,7 @@ As financial data is not stationary and exhibits non-linear trends, and potentia
 	\label{fig:acf_returns}
 \end{figure}
 
-Looking at Fig \ref{fig:acf_returns} there are a few lags that fall out of the 95\% significance interval. Oddly enough there would seem to be some significant autocorrelation at lag 6, which is surprising as if anything I would have expected there to be lag 7 autocorrelation, as there are 7 observations per day. It's not a very high autocorrelation nonetheless and fitting an \acrshort{arima} model with seasonality 6 just introduced more structure into the series instead of removing it, so we abandoned that path.
+Looking at Fig \ref{fig:acf_returns} there are a few lags that fall out of the 95\% significance interval. Oddly enough there would seem to be some significant autocorrelation at lag 6, which is surprising as if anything I would have expected there to be lag 7 autocorrelation, as there are 7 observations per day. It's not a very high autocorrelation nonetheless and fitting an \acrshort{arma} model with seasonality 6 just introduced more structure into the series instead of removing it, so we abandoned that path.
 
 \begin{figure}
 	\centering

@@ -2,18 +2,23 @@
 %LM,KNN,Tree,ANN,Garch - qu'est-ce que c'est et comment ça marche
 
 \section{Time Series Methods}
-\subsection{ARIMA}
+\subsection{ARMA}
+An \acrfull{arma}(p,q) model is defined by:
+$$
+Y_t = \sum_{j=1}^p \phi_j Y_{t-j} + \sum_{j=1}^q \theta_j \epsilon_{t-j} + \epsilon_t
+$$
+Where the $\phi_j$'s and $\theta_j$'s are constants with $\phi_p , \theta_q \neq 0$. Usually $\epsilon_t \stackrel{iid}{\sim} \mathcal{N}(0,1)$ but could be any distribution with zero mean and unit variance.
 \subsection{GARCH}
-
+A \acrfull{garch}(m,r) model is defined by:
 $$
 Y_t = \sigma_t \epsilon_t
 $$
 $$
 \sigma_t^2 = \alpha_0 + \sum_{j=1}^m \alpha_j Y_{t-j}^2 + \sum_{j=1}^r \beta_j \sigma_{t-j}^2
-\quad, \epsilon_t \stackrel{iid}{\sim} \mathcal{N}(0,1)
+\quad, \epsilon_t \stackrel{iid}{\sim} F(0,1)
 $$
-
-\acrshort{garch} models are generally the \acrlong{ts} models used for financial data
+where $F$ is any distribution with zero mean and unit variance. Often it is either Normal or Student t.
+\acrshort{garch} models are generally the \acrlong{ts} models used for financial data, but more generally it is used any time the variance is clearly not constant. A \acrshort{garch} model can also be combined with an \acrshort{arma} model, to create and \acrshort{arma}-\acrshort{garch} model. As we will see later on, this will not be necessary here so we will not go further into these models.
 
 \section{Machine Learning Methods}
 We'll go over the various methods we will be using, giving a brief description and overview of the pros and cons of each and when it is appropriate to use them.
@@ -43,5 +48,16 @@ It's non parametric ? <- no prior knowledge or guess about the prior distributio
 \subsubsection{Problems}
 It suffers from curse of dimensionality. When the dimension of the feature space gets large, the space becomes sparsely populated, and the K closest observations, might actually be very far from each other, and thus not reflect well the new observation.
 As a workaround for this problem, there is a variant of \acrshort{knn} which instead of using the K closest observations, uses all the observations which fall in a certain radius of the new observation point. Thus the K parameter becomes R, the radius of the hyperball.
+
 \subsection{Trees}
+To understand more sophisticated tree methods, we first need to understand how a simple tree work for regression.
+A simple binary tree, work by splitting the feature space recursively into simple strats. Once a tree has been grown, the predictor $\hat{y}_i$ of $x_i$ is the average of all the $y_i$ in the strat that $x_i$ falls into. The prediction function is therefore piecewise constant.
+Formally:
+$$
+T(x) = \sum_{m=1}^M c_m I(x \in A_m)
+$$
+Where there are $M$ strats denoted by $A_m$ and $c_m$ are the averaging constants.
+
+
+
 \subsection{Artificial Neural Networks}
