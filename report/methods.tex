@@ -50,14 +50,32 @@ It suffers from curse of dimensionality. When the dimension of the feature space
 As a workaround for this problem, there is a variant of \acrshort{knn} which instead of using the K closest observations, uses all the observations which fall in a certain radius of the new observation point. Thus the K parameter becomes R, the radius of the hyperball.
 
 \subsection{Trees}
-To understand more sophisticated tree methods, we first need to understand how a simple tree work for regression.
-A simple binary tree, work by splitting the feature space recursively into simple strats. Once a tree has been grown, the predictor $\hat{y}_i$ of $x_i$ is the average of all the $y_i$ in the strat that $x_i$ falls into. The prediction function is therefore piecewise constant.
+To understand more sophisticated tree methods, we first need to understand how a simple tree works for regression.
+A simple binary tree, or a Decision Tree, work by splitting the feature space recursively into simple strats. Once a tree has been grown, the predictor $\hat{y}_i$ of $x_i$ is the average of all the $y_i$ in the strat that $x_i$ falls into. The prediction function is therefore piecewise constant.
 Formally:
 $$
 T(x) = \sum_{m=1}^M c_m I(x \in A_m)
 $$
 Where there are $M$ strats denoted by $A_m$ and $c_m$ are the averaging constants.
 
+\subsection{Advantages}
+Non parametric
+The tree is inexpensive to use as it has a complexity that is logarithmic
+The models are simple to understand
+\subsection{Disadvantages}
+High variance
+Over-fitting is easy
+Unstable. Change the data a little and the tree could look completely different
+Optimal tree is NP-hard so we use greedy alogrithms
+Predictions tree are not smooth.
 
+
+The variations we shall consider are
+- Random Forests
+- Extremely randomized trees
+
+Random Forests work by taking many Decision Trees constructed by taking random samples of the training set, with replacement, and then averaging the trees. This will reduce the variance, with a cost of raising the bias a little
+
+Extremely randomized trees are random forests, but in each tree, the split is determined by a random threshold. Again this leads to less variance but a slightly higher bias
 
 \subsection{Artificial Neural Networks}
