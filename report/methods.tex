@@ -58,11 +58,11 @@ T(x) = \sum_{m=1}^M c_m I(x \in A_m)
 $$
 Where there are $M$ strats denoted by $A_m$ and $c_m$ are the averaging constants.
 
-\subsection{Advantages}
+\subsubsection{Advantages}
 Non parametric
 The tree is inexpensive to use as it has a complexity that is logarithmic
 The models are simple to understand
-\subsection{Disadvantages}
+\subsubsection{Disadvantages}
 High variance
 Over-fitting is easy
 Unstable. Change the data a little and the tree could look completely different
@@ -74,8 +74,10 @@ The variations we shall consider are
 - Random Forests
 - Extremely randomized trees
 
-Random Forests work by taking many Decision Trees constructed by taking random samples of the training set, with replacement, and then averaging the trees. This will reduce the variance, with a cost of raising the bias a little
+Random Forests work by taking many Decision Trees constructed by taking random samples of the training set, with replacement, and then averaging the trees. At each split a random number of variables are chosen, thus ensuring that if a variable is predominant, it won't always be chosen first in each tree of the forest, thus decreasing the correlation of the trees amongst themselves and in turn increasing the reduction in variance.
+This will reduce the variance, with a cost of raising the bias a little.
 
-Extremely randomized trees are random forests, but in each tree, the split is determined by a random threshold. Again this leads to less variance but a slightly higher bias
+Extremely randomized trees are random forests, but in each tree, the split is determined by a random threshold, decreasing even more the correlation of trees. 
+Again this leads to less variance but a slightly higher bias
 
 \subsection{Artificial Neural Networks}

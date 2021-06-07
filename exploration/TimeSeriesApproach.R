@@ -11,7 +11,7 @@ library(lubridate)
 cut_date = ymd_h("2021-01-04 10")
 cut_date_numeric <- as.numeric(cut_date)
 cut_idx <- which(tsla_price$Date==cut_date)
-
+#cut_idx <- 3000
 
 library(tseries)
 adf.test(tsla_price$Open)
