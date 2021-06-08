@@ -22,7 +22,16 @@ where $F$ is any distribution with zero mean and unit variance. Often it is eith
 
 \section{Machine Learning Methods}
 We'll go over the various methods we will be using, giving a brief description and overview of the pros and cons of each and when it is appropriate to use them.
-We will suppose that there are $n$ observations and $m$ features.
+Following the same notation as in chapter \ref{chap:exp_design}, let $(\mathcal{X},\mathcal{Y})$ denote the features and responses of our data. A machine learning model is some function that takes the features as inputs and returns the responses as output. Let us denote a generic model by $F$ in such way that $\mathcal{Y}=F(\mathcal{X})$.
+We will suppose that there are $n$ observations and $m$ features. In this section we will only specify the methods for the univariate response case, and not go into details about the generalization to multivariate responses.
+Using the following notation, 
+$\mathcal{Y}=\{Y_i : i=0,\dots,n\}$
+$\mathcal{X}=\{(X_{i1},\dots,X_{im}) : i=0,\dots,n\}$
+we can rewrite the above relation as
+
+$$
+Y_i = F(X_i1,\dots,X_im) \forall i \in \{1:n\}
+$$
 
 
 \subsection{Linear Models}
@@ -66,7 +75,7 @@ The models are simple to understand
 High variance
 Over-fitting is easy
 Unstable. Change the data a little and the tree could look completely different
-Optimal tree is NP-hard so we use greedy alogrithms
+Optimal tree is NP-hard so we use greedy algorithms
 Predictions tree are not smooth.
 
 
