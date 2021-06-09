@@ -22,71 +22,140 @@ where $F$ is any distribution with zero mean and unit variance. Often it is eith
 
 \section{Machine Learning Methods}
 We'll go over the various methods we will be using, giving a brief description and overview of the pros and cons of each and when it is appropriate to use them.
-Following the same notation as in chapter \ref{chap:exp_design}, let $(\mathcal{X},\mathcal{Y})$ denote the features and responses of our data. A machine learning model is some function that takes the features as inputs and returns the responses as output. Let us denote a generic model by $F$ in such way that $\mathcal{Y}=F(\mathcal{X})$.
-We will suppose that there are $n$ observations and $m$ features. In this section we will only specify the methods for the univariate response case, and not go into details about the generalization to multivariate responses.
-Using the following notation, 
-$\mathcal{Y}=\{Y_i : i=0,\dots,n\}$
-$\mathcal{X}=\{(X_{i1},\dots,X_{im}) : i=0,\dots,n\}$
-we can rewrite the above relation as
+Following the same notation as in chapter \ref{chap:exp_design}, let $(\mathcal{X},\mathcal{Y})$ denote the features and responses of our data. A machine learning model is some function that takes the features $\mathcal{X}$ as inputs and returns an approximation of the responses $\hat{\mathcal{Y}}$ as output. Let us denote a generic model by $F$ in such way that $\mathcal{Y} \approx \hat{\mathcal{Y}}=F(\mathcal{X})$.
+The goal of \acrshort{ml} is to find methods that give good approximating functions $F$. The two questions that arise are "What do we use as approximating function $F$ ?" and "What makes and approximation 'good' ?" We will tackle the second question later. In the following we shall explore various methods (models $F$) that have been developed.
+
+First, however, as we are dealing with finite sets, we will suppose that there are $n$ observations and $m$ features. In this section we will only specify the methods for the univariate response case, and not go into details about the generalization to multivariate responses. This all allows us to rewrite the above sets as:
+$$\mathcal{X}=\{(X_{i1},\dots,X_{im}) : i=0,\dots,n\}$$
+$$\mathcal{Y}=\{Y_i : i=0,\dots,n\}$$
+$$\hat{\mathcal{Y}}=\{\hat{Y}_i : i=0,\dots,n\}$$
+And the model relation as:
 
 $$
-Y_i = F(X_i1,\dots,X_im) \forall i \in \{1:n\}
+Y_i \approx \hat{Y}_i = F(X_{i1},\dots,X_{im}) \forall i \in \{1:n\}
 $$
 
+For simplicity in notation, we will often use $ \vec{X_i}=(X_{i1},\dots,X_{im} $.
+
+We are now ready to explore the first method.
 
 \subsection{Linear Models}
 The idea is to use a linear combination of features to determine the response. The linear constants are the parameters that need to be chosen to give the best approximation of the response space using the feature space. Geometrically this means fitting a hyperplane to the training set, by minimizing some function (loss function).
 Formally:
 $$
-Y_j = \sum_{i=1}^m \beta_{i} X_{ji} \quad, j=1,\dots,n
+\hat{Y}_i = \sum_{j=1}^m \beta_{j} X_{ij} \quad, i=1,\dots,n
 $$
 
 \subsubsection{Advantages}
 \acrlong{lm} are some of the most common and simple models out there, but they have proven to be reliable and can be made quite complex with feature engineering. There plenty of theory and proofs about these methods. This all makes these methods and obvious first choice of methods to consider.
 %insert "toute est linéaire" quote
 \subsubsection{Problems}
-
+\begin{itemize}
+\item Linearity assumption
+\end{itemize}
+Assumes that the outputs are a linear combination of quantities. Although the fact that the linearity is in the parameters leaving a lot of room for complexity with feature engineering (like for example adding an artificial feature that is the square of another feature), this is still limiting as not all relations between the data can be expressed.
+\begin{itemize}
+\item Suffers from multicolinearity 
+\end{itemize}
+In it's basic form, \acrlong{lm} uses \acrfull{ols} which assumes the features are independent. If some are highly colinear, the method becomes unstable and small small random errors in the observations will produce a large impact, thus increasing the variance. This problem can be addresses partially by regularization (or shrinkage): putting a penalty on the size of the parameters. Example of this are Ridge and Lasso regression.
 
 \subsection{K Nearest Neighbours}
 The intuition behind \acrshort{knn} methods is simple. The idea is that observations (points in the feature space) which are "close" will have responses that are also "close". Then a good approximation would be given by averaging the responses of the K observations "closest" to the new observation.
 In this model, we need to chose the definition of "close" as well as chose the value of K.
+
+Formally:
+ $$
+ F(\vec{X_+}) = 1/K \sum_{i:\vec{X_i} \in N(X_+)}^{Y_i}
+ $$
+
+Where the neighborhood $N(\vec{X_+})$ of $ \vec{X_+} $ is the collection of $K$ closest observations
+
 Usually, the distance used to define close, is the euclidean distance and that is the one we used. As for K this parameter needs to be tuned. The larger it is the smoother the result is and the lower the more jagged it is. For optimal tuning the parameter should be as small as possible, without over-fitting.
 \subsubsection{Advantages}
-It's very intuitive and very simple to implement. 
-It's non parametric ? <- no prior knowledge or guess about the prior distribution
+\begin{itemize}
+\item Intuitive
+\end{itemize}
+The concept is very simple to understand, we are just taking the average of a new point neighbors to determine the output
+\begin{itemize}
+\item Simple to implement
+\end{itemize}
+It takes only a few lines of code to implement \acrshort{knn} and get it up and running.
+\begin{itemize}
+\item Non parametric
+\end{itemize}
+No prior knowledge about how the data is actually distributed is made, which makes it a flexible tool that can be used anywhere.
+
 \subsubsection{Problems}
+\begin{itemize}
+\item Curse of dimensionality 
+\end{itemize}
 It suffers from curse of dimensionality. When the dimension of the feature space gets large, the space becomes sparsely populated, and the K closest observations, might actually be very far from each other, and thus not reflect well the new observation.
-As a workaround for this problem, there is a variant of \acrshort{knn} which instead of using the K closest observations, uses all the observations which fall in a certain radius of the new observation point. Thus the K parameter becomes R, the radius of the hyperball.
+As a workaround for this problem, there is a variant of \acrshort{knn} which instead of using the K closest observations, uses all the observations which fall in a certain radius of the new observation point. Thus the K parameter becomes R, the radius of the hyperball. A problem with this version is that there may be no observations that fall in the hyperball of a new data point and then nothing can be inferred about it.
+\begin{itemize}
+\item Piecewise constant
+\end{itemize}
+The response space is discretized so not all outcomes can be predicted.
 
 \subsection{Trees}
-To understand more sophisticated tree methods, we first need to understand how a simple tree works for regression.
-A simple binary tree, or a Decision Tree, work by splitting the feature space recursively into simple strats. Once a tree has been grown, the predictor $\hat{y}_i$ of $x_i$ is the average of all the $y_i$ in the strat that $x_i$ falls into. The prediction function is therefore piecewise constant.
+To understand more sophisticated tree methods, we first need to understand how a simple tree works for regression. In \acrshort{knn}, the feature space in separated into regions (or "strats") and fits a constant to each region. Decision Trees work much the same way, but allow for  different and more complex definitions of strats.
+A simple binary tree, or a Decision Tree, work by splitting the feature space recursively into simple strats. Each leaf of the tree corresponds to a strat and the constant is the average of all observations that correspond to that leaf. A fully grown tree, i.e. where each observation corresponds to one leaf exactly, is equivalent to 1-NN
+ Once a tree has been grown, the predictor $\hat{Y}_i$ of $\vec{X_i}$ is the average of all the $Y_i$ in the strat that $\vec{X_i}$ falls into. The prediction function is therefore piecewise constant.
 Formally:
 $$
-T(x) = \sum_{m=1}^M c_m I(x \in A_m)
+F(\vec{X_i}) = \sum_{l=1}^L c_l I(\vec{X_i} \in A_l)
 $$
-Where there are $M$ strats denoted by $A_m$ and $c_m$ are the averaging constants.
+Where there are $L$ strats denoted by $A_l$ and $c_l$ are the averaging constants.
+It is NP-hard to determine the optimal Decision Tree for a given data set, and thus greedy approaches are used. Each split is determined by the variable and threshold that minimize the \acrlong{mse} of the split.
 
 \subsubsection{Advantages}
-Non parametric
-The tree is inexpensive to use as it has a complexity that is logarithmic
-The models are simple to understand
+\begin{itemize}
+\item Non parametric
+\end{itemize}
+Trees make no assumption on how the data is actually distributed and can be used on any data. Very little thought has to go into it
+\begin{itemize}
+\item Logarithmic complexity
+\end{itemize}
+Trees are inexpensive to use to predict values as they have a logarithmic complexity due to the binary splitting nature of Trees.
+\begin{itemize}
+\item Easy to understand
+\end{itemize}
+The concept of Decision Trees are very simple and they can be visualized, which help to understand them.
 \subsubsection{Disadvantages}
-High variance
-Over-fitting is easy
-Unstable. Change the data a little and the tree could look completely different
-Optimal tree is NP-hard so we use greedy algorithms
-Predictions tree are not smooth.
+\begin{itemize}
+\item High variance
+\end{itemize}
+
+\begin{itemize}
+\item Over-fitting is easy
+\end{itemize}
+If we grow the Tree out completely, we will end up with a model where every leaf explains exactly one observation. This is a case of extreme overfitting, but even if we stop earlier we can easily over fit if the stopping criteria is not well decided.
+\begin{itemize}
+\item Unstable
+\end{itemize}
+A tree could look completely different if the first split is different or any subsequent split is different (but with decreasing impact). This means Trees are unstable; a slight change in the data might completely change the outcome.
+\begin{itemize}
+\item No optimality
+\end{itemize}
+In theory there exists an optimal Decision Tree, but the problem of finding the optimal Tree is NP-hard, so in practice we use a greedy algorithm to grow the Tree. This means the final Tree might not be close to the optimal tree at all.
+\begin{itemize}
+\item Not smooth
+\end{itemize}
+The model is piecewise constant, and so the prediction space is not smooth.
 
 
-The variations we shall consider are
-- Random Forests
-- Extremely randomized trees
+The variations of Decision Trees we shall consider are
+\begin{itemize}
+\item Random Forests
+\item Extremely Randomized Trees
+\end{itemize}
 
-Random Forests work by taking many Decision Trees constructed by taking random samples of the training set, with replacement, and then averaging the trees. At each split a random number of variables are chosen, thus ensuring that if a variable is predominant, it won't always be chosen first in each tree of the forest, thus decreasing the correlation of the trees amongst themselves and in turn increasing the reduction in variance.
+\begin{description}
+\item [Random Forests] work by taking many Decision Trees constructed by taking random samples of the training set, with replacement, and then averaging the trees. At each split a random number of variables are chosen, thus ensuring that if a variable is predominant, it won't always be chosen first in each tree of the forest, thus decreasing the correlation of the trees amongst themselves and in turn increasing the reduction in variance.
 This will reduce the variance, with a cost of raising the bias a little.
 
-Extremely randomized trees are random forests, but in each tree, the split is determined by a random threshold, decreasing even more the correlation of trees. 
+\item [Extremely Randomized Trees] are random forests, but in each tree, the split is determined by a random threshold, decreasing even more the correlation of trees. 
 Again this leads to less variance but a slightly higher bias
+\end{description}
+
 
 \subsection{Artificial Neural Networks}
