@@ -2,6 +2,11 @@
 %LM,KNN,Tree,ANN,Garch - qu'est-ce que c'est et comment ça marche
 
 \section{Time Series Methods}
+We'll go over the various methods we will be using, giving a brief description and explaining in what cases they are used.
+Unlike regression, \acrlong{ts} analysis generally doesn't use auxiliary data to predict how the series will behave, but exploits intrinsic relation within the series itself. Often using some combination of previous values and randomness to predict the next value.
+The data must therefore have a \acrlong{ts} representation. That is, we can index it by an ordered set, such as time.
+
+
 \subsection{ARMA}
 An \acrfull{arma}(p,q) model is defined by:
 $$
@@ -47,6 +52,10 @@ $$
 $$
 
 \subsubsection{Advantages}
+\begin{itemize}
+\item Very well understood
+\end{itemize}
+
 \acrlong{lm} are some of the most common and simple models out there, but they have proven to be reliable and can be made quite complex with feature engineering. There plenty of theory and proofs about these methods. This all makes these methods and obvious first choice of methods to consider.
 %insert "toute est linéaire" quote
 \subsubsection{Problems}
@@ -70,7 +79,7 @@ Formally:
 
 Where the neighborhood $N(\vec{X_+})$ of $ \vec{X_+} $ is the collection of $K$ closest observations
 
-Usually, the distance used to define close, is the euclidean distance and that is the one we used. As for K this parameter needs to be tuned. The larger it is the smoother the result is and the lower the more jagged it is. For optimal tuning the parameter should be as small as possible, without over-fitting.
+Usually, the distance used to define "close", is the euclidean distance and that is the one we used. As for K this parameter needs to be tuned. The larger it is the smoother the result is and the lower the more jagged it is. For optimal tuning the parameter should be as small as possible, without over-fitting.
 \subsubsection{Advantages}
 \begin{itemize}
 \item Intuitive
@@ -125,6 +134,8 @@ The concept of Decision Trees are very simple and they can be visualized, which 
 \item High variance
 \end{itemize}
 
+The choice of each split, especial the first ones, can greatly influence the outcome of the model and thus Decision Trees have high variance.
+
 \begin{itemize}
 \item Over-fitting is easy
 \end{itemize}
@@ -144,10 +155,6 @@ The model is piecewise constant, and so the prediction space is not smooth.
 
 
 The variations of Decision Trees we shall consider are
-\begin{itemize}
-\item Random Forests
-\item Extremely Randomized Trees
-\end{itemize}
 
 \begin{description}
 \item [Random Forests] work by taking many Decision Trees constructed by taking random samples of the training set, with replacement, and then averaging the trees. At each split a random number of variables are chosen, thus ensuring that if a variable is predominant, it won't always be chosen first in each tree of the forest, thus decreasing the correlation of the trees amongst themselves and in turn increasing the reduction in variance.
@@ -159,3 +166,18 @@ Again this leads to less variance but a slightly higher bias
 
 
 \subsection{Artificial Neural Networks}
+
+\subsubsection{Advantages}
+\begin{itemize}
+\item Can learn non-linear models
+\end{itemize}
+\subsubsection{Problems}
+\begin{itemize}
+\item Non-convex loss function
+\end{itemize}
+\begin{itemize}
+\item Hyperparameters tuning
+\end{itemize}
+\begin{itemize}
+\item Sensitive to feature scaling
+\end{itemize}
