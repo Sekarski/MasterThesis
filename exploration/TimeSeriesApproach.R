@@ -10,8 +10,8 @@ plot(tsla_price$Open)
 library(lubridate)
 cut_date = ymd_h("2021-01-04 10")
 cut_date_numeric <- as.numeric(cut_date)
-cut_idx <- which(tsla_price$Date==cut_date)
-#cut_idx <- 3000
+#cut_idx <- which(tsla_price$Date==cut_date)
+cut_idx <- 3000
 
 library(tseries)
 adf.test(tsla_price$Open)
@@ -98,10 +98,18 @@ abline(a=0,b=1) #manually adding the line
 cpgram(std.res3)
 
 #prediction
-predict(fit3,35,plot=TRUE,mse="cond")
+predict(fit3,35,plot=TRUE,mse="cond") #,crit_val=3.9 ???
+# The critical values of 1.26 or whatever, are different from the Student t tables,
+# because in the definition of GARCH process, the error distribution must have
+# zero mean and unit variance, but Student t has a variance of nu/(nu-2), so it has
+# been standardized and as such the tables values need to be standardized as well.
+
 #lines(round(0.25*cut_idx):(round(0.25*cut_idx)+length(returns_test)-1),returns_test)
+
+
 
 #simulation
 temp <- garchSpec(model=fit3@fit$par,cond.dist = 'std')
 garchSim(temp)
 plot(garchSim(temp))
+
