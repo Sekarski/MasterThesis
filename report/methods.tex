@@ -3,18 +3,31 @@
 
 \section{Time Series Methods}
 We'll go over the various methods we will be using, giving a brief description and explaining in what cases they are used.
-Unlike regression, \acrlong{ts} analysis generally doesn't use auxiliary data to predict how the series will behave, but exploits intrinsic relation within the series itself. Often using some combination of previous values and randomness to predict the next value.
+Unlike with regular regression, \acrlong{ts} analysis generally doesn't use auxiliary data to predict how the series will behave, but exploits intrinsic relation within the series itself. Often using some combination of previous values and randomness to predict the next value.
 The data must therefore have a \acrlong{ts} representation. That is, we can index it by an ordered set, such as time.
+Let us denote such a series by $\{Y_t\}_{t=1,\dots,n}$.
+It is generally assumed that a \acrlong{ts} has to be stationary to work with. In other words, the series should have a constant mean, and a covariance function depending only on the lag between 2 observations (and not for example of the time step). In practice trend is removed from the series before analysis all together and then is added back at the end if necessary.
+Classic \acrlong{ts} methods are generally good at explaining \acrshort{ts}, but are less interesting for predictions, as they always predict the expected value, as we will see with our Tesla case.
 
 
 \subsection{ARMA}
-An \acrfull{arma}(p,q) model is defined by:
+\acrfull{arma} model have 2 components: an \acrfull{ar} part and a \acrfull{ma} part. 
+The \acrshort{ar} part, as it's name suggests, is a regression of the series with itself. That is, we suppose that an observation is a linear combination of a certain number of previous observations, plus a little noise. Here the noise of each observation has an indirect influence on following values.
+The \acrshort{ma} part, on the other hand, assumes that the error terms of previous observations have a direct influence on following values. In other words, we use previous error terms as covariates to do regression on the series.
+Putting both together we get the general \acrshort{arma} model.
+An \acrshort{arma} (p,q) model is defined by:
 $$
 Y_t = \sum_{j=1}^p \phi_j Y_{t-j} + \sum_{j=1}^q \theta_j \epsilon_{t-j} + \epsilon_t
 $$
 Where the $\phi_j$'s and $\theta_j$'s are constants with $\phi_p , \theta_q \neq 0$. Usually $\epsilon_t \stackrel{iid}{\sim} \mathcal{N}(0,1)$ but could be any distribution with zero mean and unit variance.
+
 \subsection{GARCH}
-A \acrfull{garch}(m,r) model is defined by:
+\acrshort{arma} models make an assumption that can be quite limiting for financial \acrlong{ts}, in that is assumes the variance is homogeneous throughout time, but with financial data this is practically never the case. There are always periods of more volatility than other, for example when there is a big announcement or a scandal, or other speculative uncertainty. 
+To address this problem, a model was developed for modeling noise in a \acrlong{ts} that was variable: the \acrfull{arch} model, and later it's generalization, the \acrfull{garch} model.
+
+The idea of these models, is to model the variance as an \acrshort{arma} process. This leads to the following definition.
+
+A \acrshort{garch}(m,r) model is defined by:
 $$
 Y_t = \sigma_t \epsilon_t
 $$
@@ -22,7 +35,7 @@ $$
 \sigma_t^2 = \alpha_0 + \sum_{j=1}^m \alpha_j Y_{t-j}^2 + \sum_{j=1}^r \beta_j \sigma_{t-j}^2
 \quad, \epsilon_t \stackrel{iid}{\sim} F(0,1)
 $$
-where $F$ is any distribution with zero mean and unit variance. Often it is either Normal or Student t.
+where $F$ is any distribution with zero mean and unit variance. Often it is either Normal or Student t (that has been standardized).
 \acrshort{garch} models are generally the \acrlong{ts} models used for financial data, but more generally it is used any time the variance is clearly not constant. A \acrshort{garch} model can also be combined with an \acrshort{arma} model, to create and \acrshort{arma}-\acrshort{garch} model. As we will see later on, this will not be necessary here so we will not go further into these models.
 
 \section{Machine Learning Methods}

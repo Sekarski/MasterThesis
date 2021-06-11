@@ -118,3 +118,5 @@ So there are some slight differences between the R and Python implementations, b
 
 
 \section{Machine Learning Approach}
+As in the \acrshort{ts} approach, we will not consider the raw price of the stock, but consider the log returns of the price. As such we are analyzing the variations in the stock price more so than the stock price itself (although indirectly we are). This helps to keep the values contained in a same region of the response space, thus decreasing sparsity problems, while also protecting the first part of the series's contribution, where the absolute variation is small but the relative variation is as large as the later half of the series.
+
