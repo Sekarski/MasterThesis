@@ -5,6 +5,7 @@
 \usepackage[acronym,toc]{glossaries}
 \usepackage{graphicx}
 \usepackage{hyperref}
+\usepackage{booktabs} %for the use of Pandas tables outputed as latex
 
 \title{Predictive Models on Tesla Stock}
 \author{Samuel Sekarski \\ Supervisor: Dr. Gholam}
@@ -88,7 +89,26 @@ And finally, since the begging of 2021, the stock price has tapered off, and fal
 
 \chapter{Conclusion}
 
+Would like to have tuned the methods. Tried some manual tuning by varying the parameters of methods arbitrarily  and received some better results , but didn't spend enough time checking the tuning and being formal about it to include it in this paper, out of fear that some results might just be coincidence and might mislead the reader. Would definitely like to spend more time on it though.
+
+Other problem is too far ahead maybe. Cuz the first part of the predictions are rather decent
+Theory: the frenzy that makes price swing expires a lot faster than one week. My guess is it expires roughly after one day, and in our case, something probably happened 2 days or more after date from which we start predicting, and thus the relevant covariate information was not part of the input.
+
 \chapter{Future Works}
+
+
+\begin{thebibliography}{9}
+
+\bibitem{DTpaper}
+L. Breiman, J. H. Friedman, R. A. Olshen, C. J. Stone, \textit{Classification and regression trees}, Monterey CA: Wadsworth & Brooks/Cole Advanced Books & Software, 1984
+
+\bibitem{RFpaper}
+L. Breiman, \textit{Random Forests}, Machine Learning, 45(1),5-32, 2001
+
+\bibitem{ETpaper}
+P. Geurts, D. Ernst., and L.Wehenkel, \textit{Extremely randomized trees}, Machine Learning, 63(1),3-42,2006
+
+\end{thebibliography}
 
 
 \printglossary[type=\acronymtype]

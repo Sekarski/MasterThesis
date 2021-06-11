@@ -136,3 +136,4 @@ report/*
 !report/*.tex
 !report/img/
 !report/*.pdf
+!report/tab/
