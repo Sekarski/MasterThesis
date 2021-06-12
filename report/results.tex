@@ -101,10 +101,10 @@ As for the spike between Q2/20 and Q3/20, this could perhaps be explained by the
 
 The final \acrshort{ts} model is a \acrshort{garch}(1,1) model with Student-t distributed residuals. The parameters estimated by Python are:
 \begin{align*}
-\alpha_0 &= 0.042 \\
-\alpha_1 &= 0.065 \\
-\beta_1 &= 0.934 \\
-\nu &= 2.56
+\alpha_0 &= 0.042 & confidnce interval: & [0.003, 0.081] \\
+\alpha_1 &= 0.065 & confidnce interval: & [0.033, 0.098]\\
+\beta_1 &= 0.934 & confidnce interval: & [0.893, 0.976]\\
+\nu &= 2.56 & confidnce interval: & [2.41, 2.72]
 \end{align*}
 The parameters estimated by R are:
 \begin{align*}
@@ -114,17 +114,28 @@ The parameters estimated by R are:
 \nu &= 2.23 \\
 \end{align*}
 
-So there are some slight differences between the R and Python implementations, but the results are close. This could be explained by a difference of initial values for the solver
+So there are some slight differences between the R and Python implementations, but the results are close. This could be explained by a difference of initial values for the solver.
+
+\begin{figure}
+	\centering
+	\includegraphics[width=\textwidth]{img/TSpred_ci.pdf}
+	\caption{Prediction of future returns with 95\% confidence intervals}
+	\label{fig:garch_pred}
+\end{figure}
+
+Using R, the log returns predictions can be seen in Figure \ref{fig:garch_pred}. The model has mean zero, so it just predicts zero for future values, so that is not very interesting, but what is, is the confidence intervals. 
 
 
 \section{Machine Learning Approach}
 As in the \acrshort{ts} approach, we will not consider the raw price of the stock, but consider the log returns of the price. As such we are analyzing the variations in the stock price more so than the stock price itself (although indirectly we are). This helps to keep the values contained in a same region of the response space, thus decreasing sparsity problems, while also protecting the first part of the series's contribution, where the absolute variation is small but the relative variation is as large as the later half of the series.
 
+\subsection{First case}
+
 For the first scenario,  where we have a univariate response, and use only the external covariates of time, the \acrlong{gt} data for the search words "Tesla" and "Musk" as well as Elon Musk's tweets statistics of retweet count and like count, we first standardized the data with a min-max scaler, in order to get all the covariates between 0 and 1. While is is not so important for some of the methods, like \acrlong{lm} (though it still is best practice), it is very important for model like \acrshort{ann}, so that one variable with high absolute values compared to others (like for example tweet like counts in the hundred thousands) doesn't overshadow the rest.
 
 \input{tab/tab_mlresults_basic.tex}
 
-After standardizing, we fit 6 different models to the data, with default parameters and a set seed for reproducibility and then used them to predict values in the test set, and compared them with the real values. As can be seen in table \ref{tab:mlresults_basic}, just looking at the error measures, the \acrlong{lm} seems to work the best both if we consider the error on the log return scale (the scale on which the models were fit), and if we transform the results back into the stock price scale. The next best one seems to be the \acrlong{ann} on the returns scale, and is third on the price scale. The second best on the price scale is the \acrlong{rf}  but it performs second to last on the returns scale. There is a similar phenomena for \acrshort{knn}, which comes in third on the returns scale, but second to last on the price scale. Overall the worst on both scales is the \acrlong{dt}, which is not a big surprise as we saw earlier that a single \acrshort{dt} by itself usually performs poorly. Sadly, when looking at $R^2$, the only model that performs better that just using the expected value, is the \acrlong{lm}.
+After standardizing, we fit 6 different models to the data, with default parameters and a set seed for reproducibility and then used them to predict values in the test set, and compared them with the real values. As can be seen in table \ref{tab:mlresults_basic}, just looking at the error measures, the \acrlong{lm} seems to work the best both if we consider the error on the log return scale (the scale on which the models were fit), and if we transform the results back into the stock price scale. The next best one seems to be the \acrlong{ann} on the returns scale, and is third on the price scale. The second best on the price scale is the \acrlong{rf}  but it performs second to last on the returns scale. There is a similar phenomena for \acrshort{knn}, which comes in third on the returns scale, but second to last on the price scale. Overall the worst on both scales is the \acrlong{dt}, which is not a big surprise as we saw earlier that a single \acrshort{dt} by itself usually performs poorly. Sadly, when looking at $R^2$, the only model that performs better that just using the expected value, is the \acrlong{lm}. 
 
 \begin{figure}
 	\centering
@@ -135,3 +146,24 @@ After standardizing, we fit 6 different models to the data, with default paramet
 
 Looking at the plotted prediction versus test values, in figure \ref{fig:mlresults_basic}, we notice some interesting things. First, only the \acrshort{rf} arrives at the right price range at the end of the test period, even thought the path to it doesn't reflect reality, whereas all the other model predict a continued increase in the price. Second we notice that the output of the \acrshort{lm} and \acrshort{ann} are similar, which means the neural network decided that the \acrlong{lm} was already roughly the best that could be achieved with the input data. But this could just be because the default parameters of the \acrshort{ann} are not well tuned for this problem. We see also that the model predict the short term values relatively well, say the first day or so, but then perform badly for longer time periods.
 The \acrshort{dt} predicts a sharp change in the price at the beginning, that seems to be roughly of the right amplitude, but just in the wrong direction, so perhaps it detected that there would be something big happening, but didn't know how to decide if it was positive or negative. But there is no way to know this, and it could just be a coincidence.
+
+\subsection{Second case}
+For the second scenario, we consider one week ahead of log returns as response variables and consider one month prior of every covariate as feature variable.
+Just like in the univariate response case, we scale the inputs to fit in the 0-1 interval, using a min-max scaler.
+
+\input{tab/tab_mlresults_v2.tex}
+
+We fit 6 models to the data, using the default parameters and using the same seeds as before for reproducibility.
+As we can see in table \ref{tab:mlresults_v2}, again the \acrshort{lm} works the best, followed by the \acrshort{ann} and the two aggregated tree methods, on both scales, and the poorest performing methods are \acrshort{knn} and \acrshort{dt} which is not very surprising. Again the \acrshort{lm} model performs better than the expected value predictor, according to the $R^2$ statistic. It is nice to see that this tme the \acrshort{ann} method performed better than the expected value on the price scale, even if less well than the \acrshort{lm} method. Again, my hypothesis for this is that \acrshort{lm} doesn't require any tuning of parameters, to it is already at optimal output performance, while the other methods require tuning of parameters, and the default parameters are not optimal.
+
+Considering that the aggregated tree methods perform only slightly worse than the expected value predictor, using only the default parameters,  with some tuning they could yield nice results. \acrshort{ann} performed decently in this setting, but the performance can vary quite a bit depending on the parameters and also on the seed, so correct tuning would also likely yield good results.
+
+\begin{figure}
+	\centering
+	\includegraphics[width=\textwidth]{img/img_mlresults_v2.pdf}
+	\caption{Multivariate output case ML results, on the log returns scale and on the original scale, zoomed into the last part of the series.}
+	\label{fig:mlresults_v2}
+\end{figure}
+
+We plotted visually in figure \ref{fig:mlresults_v2} the first week of data in the test set, the prediction for the same week, and the month of data used as input to predict it. The fit for the \acrshort{lm} looks indeed quite nice, but doesn't manage to capture the final spike.
+The \acrlong{rf} and the \acrlong{et} both capture the general trend, but not it's amplitude. \acrshort{ann} performs a bit better than the trees, but not substantially. All model fail to predict the last spike in the returns (and price).

@@ -170,27 +170,48 @@ The model is piecewise constant, and so the prediction space is not smooth.
 The variations of Decision Trees we shall consider are
 
 \begin{description}
-\item [Random Forests] work by taking many Decision Trees constructed by taking random samples of the training set, with replacement, and then averaging the trees. At each split a random number of variables are chosen, thus ensuring that if a variable is predominant, it won't always be chosen first in each tree of the forest, thus decreasing the correlation of the trees amongst themselves and in turn increasing the reduction in variance.
+\item [\acrfull{rf}] work by taking many Decision Trees constructed by taking random samples of the training set, with replacement, and then averaging the trees. At each split a random number of variables are chosen, thus ensuring that if a variable is predominant, it won't always be chosen first in each tree of the forest, thus decreasing the correlation of the trees amongst themselves and in turn increasing the reduction in variance.
 This will reduce the variance, with a cost of raising the bias a little.
 
-\item [Extremely Randomized Trees] are random forests, but in each tree, the split is determined by a random threshold, decreasing even more the correlation of trees. 
+\item [\acrfull{et}] are random forests, but in each tree, the split is determined by a random threshold, decreasing even more the correlation of trees. 
 Again this leads to less variance but a slightly higher bias
 \end{description}
 
 
 \subsection{Artificial Neural Networks}
+A fully in-depth and formal explanation of Neural Networks would take us out of the scope of this report. The literature on the subject is immense and the idea dates back to the 1950's and has grown ever since. As such we will give only a brief and simplified explanation in this report.
+The idea behind \acrfull{ann} is to try to imitate the way neurons work in a brain: the neurons are connected together in a complex network, and when they are stimulated by inputs enough to reach a certain activation level, they will transmit a signal to certain neighboring neurons, combining signals, and so forth until some output is produced.
+
+\begin{figure}
+	\centering
+	\includegraphics[width=\textwidth]{img/Colored_neural_network.png}
+	\caption{Schematic of an \acrlong{ann} source from \url{https://en.wikipedia.org/wiki/Artificial_neural_network}}
+	\label{fig:nn}
+\end{figure}
+
+An \acrshort{ann} consists of an input layer, and output layer and multiple hidden layers (see Figure \ref{fig:nn}). The inputs are linearly combined, if activated, into the next layer of neurons, which is combined again, and again until reaching the output layer.
 
 \subsubsection{Advantages}
 \begin{itemize}
 \item Can learn non-linear models
 \end{itemize}
+The models can be use on a wide variety of problems, including those which have non-linear properties, and if tuned right work relatively well. A lot of people don't even think too much about the regression problem they have and just throw a Neural Network at it.
+
 \subsubsection{Problems}
 \begin{itemize}
 \item Non-convex loss function
 \end{itemize}
+This leads there to be multiple local minimum, and a different random weight initialization can lead to very different results
+
 \begin{itemize}
 \item Hyperparameters tuning
 \end{itemize}
+There are a lot of parameters to tune, such as the number of hidden layers, the size of each hidden layer, what activation function to use, what L2 penalization, etc. etc.
 \begin{itemize}
 \item Sensitive to feature scaling
 \end{itemize}
+If some features are not scaled the same as others, they may dominate or be dominated in the output, rendering a portion of the features useless.
+\begin{itemize}
+\item Black box
+\end{itemize}
+There is interpretability of the relation between the inputs and outputs. The model just does it's thing and spits out an result.
