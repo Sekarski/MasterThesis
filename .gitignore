@@ -137,3 +137,6 @@ report/*
 !report/img/
 !report/*.pdf
 !report/tab/
+
+### MacOS things
+.DS_Store
