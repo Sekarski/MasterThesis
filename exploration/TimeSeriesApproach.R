@@ -3,6 +3,7 @@ source("AuxFunctions.R")
 
 library(tidyverse)
 
+set.seed(42)
 
 tsla_price <- read.csv("../data/data_h_corrected.csv")
 plot(tsla_price$Open)
@@ -82,6 +83,14 @@ acf(std.res2**2,lag.max=100)
 
 fit3 <- garchFit(~garch(1,1),returns_train,cond.dist = 'std',include.mean = FALSE)
 std.res3 <- fit3@residuals/fit3@sigma.t
+
+# parameter confidence intervals
+alpha <- 0.05
+cv <- qnorm(1.0 - alpha / 2.0)
+params <- fit3@fit$par
+se <- fit3@fit$se.coef
+lower <- params - cv * se
+upper <- params + cv * se
 
 plot(std.res3,type='l',main='',ylab='')
 plot(fit3@sigma.t,type='l',main='',ylab='')
