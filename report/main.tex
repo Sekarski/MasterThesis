@@ -4,7 +4,7 @@
 \usepackage{amsmath}
 \usepackage[acronym,toc]{glossaries}
 \usepackage{graphicx}
-\usepackage{hyperref}
+\PassOptionsToPackage{hyphens}{url}\usepackage{hyperref}
 \usepackage{booktabs} %for the use of Pandas tables outputed as latex
 
 \title{Predictive Models on Tesla Stock}
@@ -40,13 +40,33 @@
 }
 \newglossaryentry{R2}
 {
-	name=$R^2$,
+	name=\ensuremath{R^2},
 	description={Coefficient of determination}
 }
 \newglossaryentry{snp}
 {
 	name=S\&P500,
 	description={S\&P500 index, composed of 500 important US stocks}
+}
+\newglossaryentry{r}
+{
+	name=R,
+	description={"free software environment for statistical computing and graphics" \url{https://www.r-project.org}}
+}
+\newglossaryentry{python}
+{
+	name=Python,
+	description={"programming language that lets you work quickly and integrate systems more effectively" \url{https://www.python.org}}
+}
+\newglossaryentry{nasdaq}
+{
+	name=NASDAQ,
+	description={Second largest American stock exchange, based in New York City \url{https://www.nasdaq.com}}
+}
+\newglossaryentry{utc}
+{
+	name=UTC,
+	description={Universal Time Coordinate. Time coordinate system with origin in Greenwich (UK)}
 }
 
 \begin{document} 
@@ -56,27 +76,28 @@
 \listoffigures
 
 \chapter{Introduction}
+\label{chap:introduction}
 %Questions:
 %ML vs TS ?
 %What support data could improve accuracy ?
 %In summary on ISA i wrote "how did covid impact stock price", buuuut didn't really look at that (yet ?)
 %Supervisor said to make it a bit more about financial time series in general
-In 2020, despite the global pandemic, the electric vehicle maker Tesla saw it's stock price go up 700$\%$, which is more than Amazon's or Netflix's went up, both of whom profited during the pandemic. Tesla was also added to the S$\&$P500 index in November and underwent a stock split shortly before that, because of increased demands. In fact for years, Tesla stock has been on the minds of more and more potential investors, wondering if they should buy-in or not.
+In 2020, despite the global pandemic, the electric vehicle maker Tesla saw it's stock price go up 700$\%$, which is more than Amazon's or Netflix's went up, both of whom profited during the pandemic. Tesla was also added to the \Gls{snp} index in December\footnote{\url{https://www.theguardian.com/technology/2020/dec/21/tesla-joins-wall-streets-sp-500-share-index} (June 24, 2021)} and underwent a stock split shortly before that \footnote{\url{https://www.cnn.com/2020/08/11/cars/tesla-stock-split/index.html} (June 24, 2021)}, because of increased demands. In fact for years, Tesla stock has been on the minds of more and more potential investors, wondering if they should buy-in or not.
 
 In this thesis, we will look to try to find models that could accurately fit Tesla's stock price evolution, which people could use to help make decisions. We will not, however, develop any kind of trading strategy, nor suggest to the reader any financial actions.
 
 To frame our research our main question will be: How well can existing models fit Tesla stock price ?
 We shall use data spanning 2019 and 2020.
 
-The classical approach to financial data is through \acrfull{ts} analysis, and as such we shall consider various models developed for time series. The more novel approach is to use \acrfull{ml} algorithms to attempt to train a model to fit the financial data. We shall explore some of these methods as well, and then compare both the Machine Learning and Time Series approaches, and see which yields the better fits. This shall be our second area of focus.
+The classical approach to financial data is through \acrfull{ts} analysis, and as such we shall consider various models developed for \acrlong{ts}. The more novel approach is to use \acrfull{ml} algorithms to attempt to train a model to fit the financial data. We shall explore some of these methods as well, and then compare both the Machine Learning and Time Series approaches, and see which yields the better fits. This shall be our second area of focus.
 
-In continuation of the first question, we shall ask ourselves how public sentiment about Tesla affects it's stock. In the past, investing was reserved only to big institutions and select individuals, but with the rise of internet, this practice has been expanded and now anyone (so called "retail investors") can invest. And as seen in the Gamestop short squeeze of January 2021, when a group of individuals have a similar sentiment, they can influence the markets immensely. We shall use Google Trends to see if adding a public sentiment factor into account benefits the modelling.
+In continuation of the first question, we shall ask ourselves how public sentiment about Tesla affects it's stock. In the past, investing was reserved only to big institutions and select individuals, but with the rise of internet, this practice has been expanded and now anyone (so called "retail investors") can invest. And as seen in the Gamestop short squeeze of January 2021 \footnote{\url{https://en.wikipedia.org/wiki/GameStop_short_squeeze} (June 24, 2021)}, when a group of individuals have a similar sentiment, they can influence the markets immensely. We shall use Google Trends \footnote{\url{https://trends.google.com/trends} (June 24, 2021)} to see if adding a public sentiment factor into account benefits the modeling.
 
 Another subquestion we shall consider, is whether posts on social media can influence a stock.
-Tesla CEO Elon Musk is known for his tweeting habits that can shake markets, as for example with his tweets about cryptocurrency in early 2021. Another example, closer to the subject, is when Musk tweeted in May 2020 that the stock price was "too high" and the stock then fell 10$\%$. The US Securities and Exchange Commission (SEC) definitely thinks Musk's tweet have influence, as the SEC filed a lawsuit against the billionaire in September 2018 regarding one of his tweets \footnote{\url{https://www.sec.gov/news/press-release/2018-226}}. We shall use data collected from Twitters API to see if his tweets truly have an influence and if using this data we can improve upon our models.
+Tesla CEO Elon Musk is known for his tweeting habits that can shake markets, as for example with his tweets about cryptocurrency in early 2021 \footnote{\url{https://www.forbes.com/sites/ronshevlin/2021/02/21/how-elon-musk-moves-the-price-of-bitcoin-with-his-twitter-activity} (June 24, 2021)}. Another example, closer to the subject, is when Musk tweeted in May 2020 that the stock price was "too high" and the stock then fell 10$\%$ \footnote{\url{https://www.cnbc.com/2020/05/01/tesla-ceo-elon-musk-says-stock-price-is-too-high-shares-fall.html} (June 24, 2021)}. The US Securities and Exchange Commission (SEC) definitely thinks Musk's tweet have influence, as the SEC filed a lawsuit against the billionaire in September 2018 regarding one of his tweets \footnote{\url{https://www.sec.gov/news/press-release/2018-226} (June 24, 2021)}. We shall use data collected from Twitters \Gls{API} \footnote{\url{https://developer.twitter.com} (June 24, 2021)} to see if his tweets truly have an influence and if using this data we can improve upon our models.
 
 
-We shall also, in a lesser measure, compare how implementations of these methods in the two main programming languages for data analysis, that is Python and R, compare to each other. Are there significant outcome differences using one or the other ? What kind of support (frameworks, libraries, packages, etc.) exist for this kind of modelling in each ?
+We shall also, in a lesser measure, compare how implementations of these methods in the two main programming languages for data analysis, that is \Gls{python} and \Gls{r}, compare to each other. Are there significant outcome differences using one or the other ? What kind of support (frameworks, libraries, packages, etc.) exist for this kind of modeling in each ?
 
 And finally, since the beginning of 2021, the stock price has tapered off, and fallen. We shall lastly ask ourselves if our best models developed on the 2019 and 2020 time frame will predict this.
 
@@ -91,19 +112,23 @@ And finally, since the beginning of 2021, the stock price has tapered off, and f
 \include{results}
 
 \chapter{Conclusion}
+\label{chap:conclusion}
 
-The \acrlong{ts} analysis shows that a \acrshort{garch}(1,1) model is good at explaining the stock price and it's fluctuations, and give us insight as to why and when the price fluctuates. Other than extreme events, such as the Covid-19 pandemic than created a sharp rise in volatility, there are some events, that occur at given times, know in advance, that create spikes in volatility. For example the quarterly earning reports. These spikes in fluctuation are important, as this is where people make or lose money in large quantities. Being able to consistently predict them, is an asset.
+The \acrlong{ts} analysis shows that a \acrshort{garch}(1,1) model is good at explaining the stock price and it's fluctuations, and give us insight as to why and when the price fluctuates. Other than extreme events, such as the Covid-19 pandemic that created a sharp rise in volatility, there are some events, that occur at given times, known in advance, that create spikes in volatility. For example the quarterly earning reports. These spikes in fluctuation are important, as this is where people make or lose money in large quantities. Being able to consistently predict them, is an asset.
 
 The \acrlong{ml} modeling and prediction shows that for default parameters, simple \acrlong{lm} still work the best. However I would like to have tuned the other methods, as this would greatly increase their accuracy and potentially yield better results than the \acrlong{lm}. I tried some manual tuning by varying the parameters of methods arbitrarily  and received some better results , but didn't spend enough time checking the tuning and being formal about it to include it in this report, out of fear that some results might just be coincidences and might mislead the reader.
 
-We also see from the \acrlong{ml} approach, that the prediction get bad relatively fast after about one day in the future. 
-My theory about this, other than the obvious that the more in the future we try to go, the more uncertainty there is, is the following. The frenzy (measured by Google Search activity and twitter activity) that makes price swing expires a lot faster than one week. My guess is it expires roughly after one day, and in our case, something probably happened 2 days or more after date from which we start predicting, and thus the relevant covariate information was not part of the input. This would explain why non of the models were able to predict the final spike in price.
+We also see from the \acrlong{ml} approach, that the predictions get bad relatively fast after about one day in the future. 
+My theory about this, other than the obvious that the more in the future we try to go, the more uncertainty there is, is the following. The frenzy (measured by Google Search activity and twitter activity) that makes price swing, expires a lot faster than one week. My guess is it expires roughly after one day, and in our case, something probably happened 2 days or more after date from which we start predicting, and thus the relevant covariate information was not part of the input. This would explain why none of the models were able to predict the final spike in price.
 
-As far as the comparison of Python and R, we were only able to do this with the \acrlong{ts} approach, and in this case the results very quite similar, with only minor differences. Explained probably by different choices in initial values or optimizers only, and not due to difference in implementation of methods in general. I was unable in the allocated time to get the R verison of the \acrlong{ml} to work, and so we can not do any comparison for those. I do suspect however that the results would be similar to those of Python as well.
+As far as the comparison of \Gls{python} and \Gls{r}, we were only able to do this with the \acrlong{ts} approach, and in this case the results quite similar, with only minor differences. Explained probably by different choices in initial values or optimizers only, and not due to difference in implementation of methods in general. I was unable in the allocated time to get the \Gls{r} version of the \acrlong{ml} to work, and so we can not do any comparison for those. I do suspect however that the results would be similar to those of \Gls{python} as well.
+
+It is also important to note that the \acrlong{ml} methods don't generally give easy access to uncertainty of the predictions, in the form of confidence intervals or otherwise, which would be useful to have.
 
 As for a personal stand point, I came into this project with only a  little theoretical knowledge about the subject of \acrlong{ml} and one of my goals was to get a practical sense of how it worked and what needed to be done to get them to work. And this was fulfilled. I was surprised how much preprocessing of the data is necessary and how important it is. I also have a better understanding of the methods presented in the report even if not complete yet.
 
 \chapter{Future Works}
+\label{chap:future}
 To further this research, I would like to first and foremost tune the models and see what results I get with an optimal or close to optimal tuning.
 Considering the dates of quarterly earnings report seem to have a big influence on the volatility of the process, as shown by the \acrlong{garch} fit, it might be worth taking that into account as a variable. I would also like to find other variables that could be good indicators of volatility more in advance than the Google searches, or tweet reactions.
 Additionally, I would like to try more novel methods on this problem and see how well they would perform. Long Short-Term Memory models appear to show promise for modeling and predicting financial \acrlong{ts}, as seen in \cite{LSTMpaper1} or \cite{LSTMpaper2}

@@ -1,17 +1,18 @@
 \chapter{Methods}
+\label{chap:methods}
 %LM,KNN,Tree,ANN,Garch - qu'est-ce que c'est et comment ça marche
 
-\section{Time Series Methods}
+\section{\acrlong{ts} Methods}
 We'll go over the various methods we will be using, giving a brief description and explaining in what cases they are used.
 Unlike with regular regression, \acrlong{ts} analysis generally doesn't use auxiliary data to predict how the series will behave, but exploits intrinsic relation within the series itself. Often using some combination of previous values and randomness to predict the next value.
 The data must therefore have a \acrlong{ts} representation. That is, we can index it by an ordered set, such as time.
 Let us denote such a series by $\{Y_t\}_{t=1,\dots,n}$.
-It is generally assumed that a \acrlong{ts} has to be stationary to work with. In other words, the series should have a constant mean, and a covariance function depending only on the lag between 2 observations (and not for example of the time step). In practice trend is removed from the series before analysis all together and then is added back at the end if necessary.
+It is generally assumed that a \acrlong{ts} has to be stationary to work with. In other words, the series should have a constant mean, and a covariance function depending only on the lag between 2 observations (and not for example of the time step). In practice, trend is removed from the series before analysis all together and then is added back at the end if necessary.
 Classic \acrlong{ts} methods are generally good at explaining \acrshort{ts}, but are less interesting for predictions, as they always predict the expected value, as we will see with our Tesla case.
 
 
-\subsection{ARMA}
-\acrfull{arma} model have 2 components: an \acrfull{ar} part and a \acrfull{ma} part. 
+\subsection{\acrshort{arma}}
+\acrfull{arma} model \cite{ARMAbook} have 2 components: an \acrfull{ar} part and a \acrfull{ma} part. 
 The \acrshort{ar} part, as it's name suggests, is a regression of the series with itself. That is, we suppose that an observation is a linear combination of a certain number of previous observations, plus a little noise. Here the noise of each observation has an indirect influence on following values.
 The \acrshort{ma} part, on the other hand, assumes that the error terms of previous observations have a direct influence on following values. In other words, we use previous error terms as covariates to do regression on the series.
 Putting both together we get the general \acrshort{arma} model.
@@ -19,11 +20,12 @@ An \acrshort{arma} (p,q) model is defined by:
 $$
 Y_t = \sum_{j=1}^p \phi_j Y_{t-j} + \sum_{j=1}^q \theta_j \epsilon_{t-j} + \epsilon_t
 $$
-Where the $\phi_j$'s and $\theta_j$'s are constants with $\phi_p , \theta_q \neq 0$. Usually $\epsilon_t \stackrel{iid}{\sim} \mathcal{N}(0,1)$ but could be any distribution with zero mean and unit variance.
+Where the $\phi_j$'s and $\theta_j$'s are constants with $\phi_p , \theta_q \neq 0$. These are the parameters that have to be estimated. Usually $\epsilon_t \stackrel{iid}{\sim} \mathcal{N}(0,1)$ but could be any distribution with zero mean and unit variance.
 
-\subsection{GARCH}
-\acrshort{arma} models make an assumption that can be quite limiting for financial \acrlong{ts}, in that is assumes the variance is homogeneous throughout time, but with financial data this is practically never the case. There are always periods of more volatility than other, for example when there is a big announcement or a scandal, or other speculative uncertainty. 
-To address this problem, a model was developed for modeling noise in a \acrlong{ts} that was variable: the \acrfull{arch} model, and later it's generalization, the \acrfull{garch} model.
+\subsection{\acrshort{garch}}
+\label{subsec:garch}
+\acrshort{arma} models make an assumption that can be quite limiting for financial \acrlong{ts}, in that it assumes the variance is homogeneous throughout time, but with financial data this is practically never the case. There are always periods of more volatility than other, for example when there is a big announcement or a scandal, or other speculative uncertainty. 
+To address this problem, a model was developed for modeling noise in a \acrlong{ts} that was variable: the \acrfull{arch} model \cite{ARCHpaper}, and later it's generalization, the \acrfull{garch} model \cite{GARCHpaper}.
 
 The idea of these models, is to model the variance as an \acrshort{arma} process. This leads to the following definition.
 
@@ -38,10 +40,10 @@ $$
 where $F$ is any distribution with zero mean and unit variance. Often it is either Normal or Student t (that has been standardized).
 \acrshort{garch} models are generally the \acrlong{ts} models used for financial data, but more generally it is used any time the variance is clearly not constant. A \acrshort{garch} model can also be combined with an \acrshort{arma} model, to create and \acrshort{arma}-\acrshort{garch} model. As we will see later on, this will not be necessary here so we will not go further into these models.
 
-\section{Machine Learning Methods}
+\section{\acrshort{ml} Methods}
 We'll go over the various methods we will be using, giving a brief description and overview of the pros and cons of each and when it is appropriate to use them.
-Following the same notation as in chapter \ref{chap:exp_design}, let $(\mathcal{X},\mathcal{Y})$ denote the features and responses of our data. A machine learning model is some function that takes the features $\mathcal{X}$ as inputs and returns an approximation of the responses $\hat{\mathcal{Y}}$ as output. Let us denote a generic model by $F$ in such way that $\mathcal{Y} \approx \hat{\mathcal{Y}}=F(\mathcal{X})$.
-The goal of \acrshort{ml} is to find methods that give good approximating functions $F$. The two questions that arise are "What do we use as approximating function $F$ ?" and "What makes and approximation 'good' ?" We will tackle the second question later. In the following we shall explore various methods (models $F$) that have been developed.
+Following the same notation as in chapter \ref{chap:experiment_design}, let $(\mathcal{X},\mathcal{Y})$ denote the features and responses of our data. A \acrshort{ml} model is some function that takes the features $\mathcal{X}$ as inputs and returns an approximation of the responses $\hat{\mathcal{Y}}$ as output. Let us denote a generic model by $F$ in such way that $\mathcal{Y} \approx \hat{\mathcal{Y}}=F(\mathcal{X})$.
+The goal of \acrshort{ml} is to find methods that give good approximating functions $F$. The two questions that arise are "What do we use as approximating function $F$ ?" and "What makes an approximation 'good' ?". The second question was addressed in the previous chapter when discussing error measures. We will tackle the first question now. In the following we shall explore various methods (models $F$) that have been developed.
 
 First, however, as we are dealing with finite sets, we will suppose that there are $n$ observations and $m$ features. In this section we will only specify the methods for the univariate response case, and not go into details about the generalization to multivariate responses. This all allows us to rewrite the above sets as:
 $$\mathcal{X}=\{(X_{i1},\dots,X_{im}) : i=0,\dots,n\}$$
@@ -50,14 +52,12 @@ $$\hat{\mathcal{Y}}=\{\hat{Y}_i : i=0,\dots,n\}$$
 And the model relation as:
 
 $$
-Y_i \approx \hat{Y}_i = F(X_{i1},\dots,X_{im}) \forall i \in \{1:n\}
+Y_i \approx \hat{Y}_i = F(X_{i1},\dots,X_{im}) \quad \forall i \in \{1:n\}
 $$
 
-For simplicity in notation, we will often use $ \vec{X_i}=(X_{i1},\dots,X_{im} $.
+For simplicity in notation, we will often use $ \vec{X_i}=(X_{i1},\dots,X_{im}) $. We are now ready to explore the first method.
 
-We are now ready to explore the first method.
-
-\subsection{Linear Models}
+\subsection{\acrlong{lm}}
 The idea is to use a linear combination of features to determine the response. The linear constants are the parameters that need to be chosen to give the best approximation of the response space using the feature space. Geometrically this means fitting a hyperplane to the training set, by minimizing some function (loss function).
 Formally:
 $$
@@ -69,7 +69,7 @@ $$
 \item Very well understood
 \end{itemize}
 
-\acrlong{lm} are some of the most common and simple models out there, but they have proven to be reliable and can be made quite complex with feature engineering. There plenty of theory and proofs about these methods. This all makes these methods and obvious first choice of methods to consider.
+\acrlong{lm} are some of the most common and simple models out there, but they have proven to be reliable and can be made quite complex with feature engineering. There is plenty of theory and proofs about these methods. This all makes these methods and obvious first choice of methods to consider.
 %insert "toute est linéaire" quote
 \subsubsection{Problems}
 \begin{itemize}
@@ -79,10 +79,10 @@ Assumes that the outputs are a linear combination of quantities. Although the fa
 \begin{itemize}
 \item Suffers from multicolinearity 
 \end{itemize}
-In it's basic form, \acrlong{lm} uses \acrfull{ols} which assumes the features are independent. If some are highly colinear, the method becomes unstable and small small random errors in the observations will produce a large impact, thus increasing the variance. This problem can be addresses partially by regularization (or shrinkage): putting a penalty on the size of the parameters. Example of this are Ridge and Lasso regression.
+In it's basic form, \acrlong{lm} uses \acrfull{ols} which assumes the features are independent. If some are highly colinear, the method becomes unstable and small random errors in the observations will produce a large impact, thus increasing the variance. This problem can be addresses partially by regularization (or shrinkage): putting a penalty on the size of the parameters. Example of this are Ridge and Lasso regression.
 
 \subsection{K Nearest Neighbours}
-The intuition behind \acrshort{knn} methods is simple. The idea is that observations (points in the feature space) which are "close" will have responses that are also "close". Then a good approximation would be given by averaging the responses of the K observations "closest" to the new observation.
+The intuition behind \acrfull{knn} methods is simple. The idea is that observations (points in the feature space) which are "close" will have responses that are also "close". Then a good approximation would be given by averaging the responses of the K observations "closest" to the new observation.
 In this model, we need to chose the definition of "close" as well as chose the value of K.
 
 Formally:
@@ -92,7 +92,7 @@ Formally:
 
 Where the neighborhood $N(\vec{X_+})$ of $ \vec{X_+} $ is the collection of $K$ closest observations
 
-Usually, the distance used to define "close", is the euclidean distance and that is the one we used. As for K this parameter needs to be tuned. The larger it is the smoother the result is and the lower the more jagged it is. For optimal tuning the parameter should be as small as possible, without over-fitting.
+Usually, the distance used to define "close", is the euclidean distance and that is the one we used. As for K, this parameter needs to be tuned. The larger it is the smoother the result is and the lower the more jagged it is. For optimal tuning the parameter should be as small as possible, without over-fitting.
 \subsubsection{Advantages}
 \begin{itemize}
 \item Intuitive
@@ -119,15 +119,15 @@ As a workaround for this problem, there is a variant of \acrshort{knn} which ins
 The response space is discretized so not all outcomes can be predicted.
 
 \subsection{Trees}
-To understand more sophisticated tree methods, we first need to understand how a simple tree works for regression. In \acrshort{knn}, the feature space in separated into regions (or "strats") and fits a constant to each region. Decision Trees work much the same way, but allow for  different and more complex definitions of strats.
-A simple binary tree, or a Decision Tree, work by splitting the feature space recursively into simple strats. Each leaf of the tree corresponds to a strat and the constant is the average of all observations that correspond to that leaf. A fully grown tree, i.e. where each observation corresponds to one leaf exactly, is equivalent to 1-NN
+To understand more sophisticated tree methods, we first need to understand how a simple tree works for regression. In \acrshort{knn}, the feature space in separated into regions (or "strats") and fits a constant to each region. A \acrfull{dt} \cite{DTpaper} works much the same way, but allows for different and more complex definitions of strats.
+A simple binary tree, or a \acrshort{dt}, works by splitting the feature space recursively into simple strats. Each leaf of the tree corresponds to a strat and the constant is the average of all observations that correspond to that leaf. A fully grown tree, i.e. where each observation corresponds to one leaf exactly, is equivalent to 1-NN.
  Once a tree has been grown, the predictor $\hat{Y}_i$ of $\vec{X_i}$ is the average of all the $Y_i$ in the strat that $\vec{X_i}$ falls into. The prediction function is therefore piecewise constant.
 Formally:
 $$
 F(\vec{X_i}) = \sum_{l=1}^L c_l I(\vec{X_i} \in A_l)
 $$
 Where there are $L$ strats denoted by $A_l$ and $c_l$ are the averaging constants.
-It is NP-hard to determine the optimal Decision Tree for a given data set, and thus greedy approaches are used. Each split is determined by the variable and threshold that minimize the \acrlong{mse} of the split.
+It is NP-hard to determine the optimal Decision Tree for a given data set, and thus greedy approaches are used. Each split is determined by the variable and threshold that minimize the \acrlong{mse} of the split. A \acrshort{dt} is usually not grown out all the way, if used by itself.
 
 \subsubsection{Advantages}
 \begin{itemize}
@@ -135,19 +135,19 @@ It is NP-hard to determine the optimal Decision Tree for a given data set, and t
 \end{itemize}
 Trees make no assumption on how the data is actually distributed and can be used on any data. Very little thought has to go into it
 \begin{itemize}
-\item Logarithmic complexity
+\item Logarithmic complexity for prediction
 \end{itemize}
-Trees are inexpensive to use to predict values as they have a logarithmic complexity due to the binary splitting nature of Trees.
+Trees are inexpensive to use (once built) to predict values as they have a logarithmic complexity due to the binary splitting nature of Trees.
 \begin{itemize}
 \item Easy to understand
 \end{itemize}
-The concept of Decision Trees are very simple and they can be visualized, which help to understand them.
+The concept of \acrlong{dt} are very simple and they can be visualized, which helps to understand them.
 \subsubsection{Disadvantages}
 \begin{itemize}
 \item High variance
 \end{itemize}
 
-The choice of each split, especial the first ones, can greatly influence the outcome of the model and thus Decision Trees have high variance.
+The choice of each split, especial the first ones, can greatly influence the outcome of the model and thus \acrshort{dt} have high variance.
 
 \begin{itemize}
 \item Over-fitting is easy
@@ -160,31 +160,31 @@ A tree could look completely different if the first split is different or any su
 \begin{itemize}
 \item No optimality
 \end{itemize}
-In theory there exists an optimal Decision Tree, but the problem of finding the optimal Tree is NP-hard, so in practice we use a greedy algorithm to grow the Tree. This means the final Tree might not be close to the optimal tree at all.
+In theory there exists an optimal \acrshort{dt}, but the problem of finding the optimal Tree is NP-hard, so in practice we use a greedy algorithm to grow the Tree. This means the final Tree might not be close to the optimal tree at all.
 \begin{itemize}
 \item Not smooth
 \end{itemize}
 The model is piecewise constant, and so the prediction space is not smooth.
 
 
-The variations of Decision Trees we shall consider are
+The variations of \acrlong{dt} we shall consider are
 
 \begin{description}
-\item [\acrfull{rf}] work by taking many Decision Trees constructed by taking random samples of the training set, with replacement, and then averaging the trees. At each split a random number of variables are chosen, thus ensuring that if a variable is predominant, it won't always be chosen first in each tree of the forest, thus decreasing the correlation of the trees amongst themselves and in turn increasing the reduction in variance.
+\item [\acrfull{rf} \cite{RFpaper}] work by taking many \acrlong{dt} constructed by taking random samples of the training set, with replacement, and then averaging the trees. At each split a random number of variables are chosen, thus ensuring that if a variable is predominant, it won't always be chosen first in each tree of the forest, thus decreasing the correlation of the trees amongst themselves and in turn increasing the reduction in variance.
 This will reduce the variance, with a cost of raising the bias a little.
 
-\item [\acrfull{et}] are random forests, but in each tree, the split is determined by a random threshold, decreasing even more the correlation of trees. 
+\item [\acrfull{et} \cite{ETpaper}] are random forests, but in each tree, the split is determined by a random threshold, decreasing even more the correlation of trees. 
 Again this leads to less variance but a slightly higher bias
 \end{description}
 
 
-\subsection{Artificial Neural Networks}
+\subsection{\acrlong{ann}}
 A fully in-depth and formal explanation of Neural Networks would take us out of the scope of this report. The literature on the subject is immense and the idea dates back to the 1950's and has grown ever since. As such we will give only a brief and simplified explanation in this report.
 The idea behind \acrfull{ann} is to try to imitate the way neurons work in a brain: the neurons are connected together in a complex network, and when they are stimulated by inputs enough to reach a certain activation level, they will transmit a signal to certain neighboring neurons, combining signals, and so forth until some output is produced.
 
 \begin{figure}
 	\centering
-	\includegraphics[width=\textwidth]{img/Colored_neural_network.png}
+	\includegraphics[width=0.5\textwidth]{img/Colored_neural_network.png}
 	\caption{Schematic of an \acrlong{ann} source from \url{https://en.wikipedia.org/wiki/Artificial_neural_network}}
 	\label{fig:nn}
 \end{figure}
@@ -195,18 +195,18 @@ An \acrshort{ann} consists of an input layer, and output layer and multiple hidd
 \begin{itemize}
 \item Can learn non-linear models
 \end{itemize}
-The models can be use on a wide variety of problems, including those which have non-linear properties, and if tuned right work relatively well. A lot of people don't even think too much about the regression problem they have and just throw a Neural Network at it.
+The models can be used on a wide variety of problems, including those which have non-linear properties, and if tuned right work relatively well. A lot of people don't even think too much about the regression problem they have and just throw a Neural Network at it.
 
 \subsubsection{Problems}
 \begin{itemize}
 \item Non-convex loss function
 \end{itemize}
-This leads there to be multiple local minimum, and a different random weight initialization can lead to very different results
+This might lead to multiple local minimum, and a different random weight initialization can lead to very different results
 
 \begin{itemize}
 \item Hyperparameters tuning
 \end{itemize}
-There are a lot of parameters to tune, such as the number of hidden layers, the size of each hidden layer, what activation function to use, what L2 penalization, etc. etc.
+There are a lot of parameters to tune, such as the number of hidden layers, the size of each hidden layer, what activation function to use, what L2 penalization, etc.
 \begin{itemize}
 \item Sensitive to feature scaling
 \end{itemize}
@@ -214,4 +214,4 @@ If some features are not scaled the same as others, they may dominate or be domi
 \begin{itemize}
 \item Black box
 \end{itemize}
-There is interpretability of the relation between the inputs and outputs. The model just does it's thing and spits out an result.
+There is no interpretability of the relation between the inputs and outputs. The model just does it's thing and spits out a result.
